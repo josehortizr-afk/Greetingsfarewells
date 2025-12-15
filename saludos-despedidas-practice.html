@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Saludos y Despedidas Practice</title>
+  <style>
+    :root{
+      --bg:#fafafa;
+      --card:#ffffff;
+      --border:#e0e0e0;
+      --text:#212121;
+      --muted:#757575;
+      --primary:#2196f3;
+      --primary-dark:#1976d2;
+      --success:#4caf50;
+      --error:#f44336;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+      padding:20px;
+    }
+    .container{max-width:900px;margin:0 auto}
+
+    header{
+      background:var(--card);
+      padding:24px;
+      border-radius:8px;
+      margin-bottom:20px;
+      border:1px solid var(--border);
+    }
+    h1{
+      font-size:28px;
+      font-weight:600;
+      margin-bottom:8px;
+      color:var(--text);
+    }
+    .subtitle{
+      font-size:14px;
+      color:var(--muted);
+      margin-bottom:16px;
+    }
+
+    .stats{
+      display:flex;
+      gap:16px;
+      justify-content:space-around;
+      padding:16px;
+      background:var(--bg);
+      border-radius:6px;
+      margin-bottom:16px;
+    }
+    .stat-item{text-align:center}
+    .stat-number{
+      font-size:24px;
+      font-weight:600;
+      color:var(--text);
+    }
+    .stat-label{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      margin-bottom:20px;
+      border-bottom:1px solid var(--border);
+      padding-bottom:0;
+      flex-wrap:wrap;
+    }
+    .tab{
+      padding:10px 16px;
+      cursor:pointer;
+      font-weight:500;
+      font-size:14px;
+      color:var(--muted);
+      border-bottom:2px solid transparent;
+      transition:all .2s;
+    }
+    .tab:hover{color:var(--text)}
+    .tab.active{
+      color:var(--primary);
+      border-bottom-color:var(--primary);
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      padding:24px;
+      border-radius:8px;
+      margin-bottom:20px;
+    }
+
+    .btn{
+      border:1px solid var(--border);
+      background:white;
+      color:var(--text);
+      padding:10px 18px;
+      border-radius:6px;
+      cursor:pointer;
+      font-weight:500;
+      font-size:14px;
+      transition:all .2s;
+    }
+    .btn:hover{
+      background:var(--bg);
+      transform:translateY(-1px);
+    }
+    .btn:active{transform:translateY(0)}
+    .btn.primary{
+      background:var(--primary);
+      border-color:var(--primary);
+      color:white;
+    }
+    .btn.primary:hover{background:var(--primary-dark)}
+    .btn.small{padding:6px 12px;font-size:13px}
+    .btn[disabled]{
+      opacity:0.5;
+      cursor:not-allowed;
+      transform:none;
+      background:#f0f0f0;
+    }
+
+    select{
+      width:100%;
+      padding:10px;
+      border:1px solid var(--border);
+      border-radius:6px;
+      background:white;
+      font-size:14px;
+      cursor:pointer;
+      margin-bottom:16px;
+    }
+
+    .flashcard-wrapper{
+      perspective:1000px;
+      min-height:280px;
+      margin:24px auto;
+      max-width:540px;
+    }
+    .flashcard{
+      position:relative;
+      width:100%;
+      height:280px;
+      transition:transform .6s;
+      transform-style:preserve-3d;
+      cursor:pointer;
+    }
+    .flashcard.flipped{transform:rotateY(180deg)}
+    .flashcard-face{
+      position:absolute;
+      width:100%;
+      height:100%;
+      backface-visibility:hidden;
+      border-radius:8px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:40px;
+      border:1px solid var(--border);
+      background:white;
+    }
+    .flashcard-front{background:#fafafa}
+    .flashcard-back{transform:rotateY(180deg)}
+    .flashcard-text{
+      font-size:34px;
+      font-weight:700;
+      text-align:center;
+      color:var(--text);
+    }
+    .flashcard-sub{
+      margin-top:12px;
+      font-size:14px;
+      color:var(--muted);
+      text-align:center;
+    }
+    .tag{
+      display:inline-block;
+      font-size:12px;
+      padding:4px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      color:var(--muted);
+      background:white;
+      margin-top:14px;
+    }
+    .flashcard-hint{
+      position:absolute;
+      bottom:16px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .card-counter{
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:16px;
+    }
+    .controls{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      margin-top:20px;
+      flex-wrap:wrap;
+    }
+
+    .prompt{
+      font-size:24px;
+      font-weight:700;
+      margin-bottom:18px;
+      text-align:center;
+      color:var(--text);
+    }
+    .options{
+      display:grid;
+      gap:12px;
+      grid-template-columns:repeat(2, 1fr);
+      margin-bottom:20px;
+    }
+    .option{
+      padding:16px;
+      border-radius:6px;
+      border:1px solid var(--border);
+      background:white;
+      cursor:pointer;
+      font-weight:600;
+      font-size:16px;
+      text-align:center;
+      transition:all .2s;
+    }
+    .option:hover{
+      border-color:var(--primary);
+      background:var(--bg);
+    }
+    .option.correct{
+      background:var(--success);
+      border-color:var(--success);
+      color:white;
+    }
+    .option.wrong{
+      background:var(--error);
+      border-color:var(--error);
+      color:white;
+    }
+    .feedback{
+      text-align:center;
+      font-size:18px;
+      font-weight:600;
+      margin:16px 0;
+      min-height:30px;
+    }
+
+    .audio-btn{
+      padding:30px 45px;
+      font-size:2em;
+      border:2px solid var(--border);
+      background:white;
+      border-radius:50%;
+      cursor:pointer;
+      transition:all .2s;
+      margin:0 auto 18px;
+      display:block;
+    }
+    .audio-btn:hover{
+      background:var(--primary);
+      border-color:var(--primary);
+      transform:scale(1.1);
+    }
+
+    .table-container{overflow-x:auto;margin-top:16px}
+    table{width:100%;border-collapse:collapse;background:white}
+    th{
+      background:var(--bg);
+      padding:12px;
+      text-align:left;
+      font-weight:700;
+      font-size:13px;
+      border:1px solid var(--border);
+    }
+    td{
+      padding:12px;
+      border:1px solid var(--border);
+      font-size:14px;
+      vertical-align:top;
+    }
+    tr:nth-child(even){background:var(--bg)}
+    .category-header{
+      background:var(--primary);
+      color:white;
+      font-weight:700;
+      text-align:center;
+    }
+
+    .how-to-box{
+      background:#e3f2fd;
+      border-radius:8px;
+      padding:12px 16px;
+      font-size:14px;
+      margin-bottom:16px;
+      border:1px solid #bbdefb;
+    }
+    .how-to-box strong{display:block;margin-bottom:4px}
+    .how-to-steps{list-style:none;padding-left:0}
+    .how-to-steps li{margin-bottom:4px}
+
+    @media (max-width: 600px){
+      .options{grid-template-columns:1fr}
+      .stats{flex-direction:column;gap:8px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>👋 Saludos y Despedidas</h1>
+      <p class="subtitle">Practice greetings, questions, and farewells (click, listen, and quiz!)</p>
+
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-number" id="correct">0</div>
+          <div class="stat-label">Correct ✅</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="streak">0</div>
+          <div class="stat-label">Streak 🔥</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="total">0</div>
+          <div class="stat-label">Played 🎯</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="tabs" id="tabs"></div>
+    <div class="card" id="view"></div>
+  </div>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
+
+    // EXACT vocabulary from your sheet (Spanish -> English).
+    const vocab = {
+      "Saludos (Greetings)": [
+        { es: "¡Hola!", en: "Hello!", note: "" },
+        { es: "Buenos días.", en: "Good morning.", note: "" },
+        { es: "Buenas tardes.", en: "Good afternoon.", note: "" },
+        { es: "Buenas noches.", en: "Good evening.", note: "" }
+      ],
+      "Preguntas (Questions)": [
+        { es: "¿Qué tal?", en: "How’s it going?", note: "" },
+        { es: "¿Cómo estás?", en: "How are you?", note: "informal" },
+        { es: "¿Cómo está usted?", en: "How are you?", note: "formal" },
+        { es: "Estoy bien.", en: "I’m fine.", note: "" },
+        { es: "¿Y tú?", en: "And you?", note: "informal" },
+        { es: "¿Y usted?", en: "And you?", note: "formal" },
+        { es: "¿Cómo te llamas?", en: "What is your name?", note: "informal" },
+        { es: "¿Cómo se llama usted?", en: "What is your name?", note: "formal" },
+        { es: "Me llamo ____.", en: "My name is ____.", note: "" },
+        { es: "Mucho gusto.", en: "It’s nice to meet you.", note: "" },
+        { es: "El gusto es mío.", en: "The pleasure is mine.", note: "" },
+        { es: "¿De dónde eres?", en: "Where are you from?", note: "informal" },
+        { es: "¿De dónde es usted?", en: "Where are you from?", note: "formal" },
+        { es: "Soy de ____.", en: "I am from ____.", note: "" }
+      ],
+      "Despedidas (Farewells)": [
+        { es: "¡Adiós!", en: "Goodbye!", note: "" },
+        { es: "¡Chao!", en: "Bye!", note: "" },
+        { es: "Nos vemos.", en: "We’ll see each other.", note: "" },
+        { es: "Hasta luego.", en: "See you later.", note: "" },
+        { es: "Hasta pronto.", en: "See you soon.", note: "" },
+        { es: "Hasta mañana.", en: "See you tomorrow.", note: "" }
+      ]
+    };
+
+    // Flatten all items
+    let allItems = [];
+    Object.keys(vocab).forEach(cat => {
+      vocab[cat].forEach(item => allItems.push({ ...item, category: cat }));
+    });
+
+    // State
+    let state = {
+      mode: "flashcards",
+      category: "All Categories",
+      correct: 0,
+      streak: 0,
+      total: 0,
+      deck: [],
+      currentIndex: 0,
+      flipped: false
+    };
+
+    // Quiz state
+    let quiz = {
+      active: false,
+      deck: [],
+      idx: 0,
+      correct: 0,
+      answers: []
+    };
+
+    const shuffle = (arr) => {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+
+    const speak = (text) => {
+      if (!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "es-ES";
+      u.rate = 0.85;
+      window.speechSynthesis.speak(u);
+    };
+
+    const updateStats = () => {
+      $("#correct").textContent = state.correct;
+      $("#streak").textContent = state.streak;
+      $("#total").textContent = state.total;
+    };
+
+    const getItems = () => {
+      if (state.category === "All Categories") return allItems;
+      return allItems.filter(x => x.category === state.category);
+    };
+
+    const renderTabs = () => {
+      const tabs = ["🃏 Flashcards", "🔊 Listening", "📝 Quiz", "📚 Database"];
+      const modes = ["flashcards", "listening", "quiz", "database"];
+      $("#tabs").innerHTML = tabs.map((t, i) =>
+        `<div class="tab ${state.mode === modes[i] ? "active" : ""}" onclick="setMode('${modes[i]}')">${t}</div>`
+      ).join("");
+    };
+
+    window.setMode = (mode) => {
+      state.mode = mode;
+      renderTabs();
+      if (mode === "flashcards") renderFlashcards();
+      if (mode === "listening") renderListening();
+      if (mode === "quiz") renderQuiz();
+      if (mode === "database") renderDatabase();
+    };
+
+    window.changeCategory = (cat) => {
+      state.category = cat;
+      state.deck = [];
+      state.currentIndex = 0;
+      state.flipped = false;
+
+      // reset quiz when switching categories
+      quiz.active = false;
+      quiz.deck = [];
+      quiz.idx = 0;
+      quiz.correct = 0;
+      quiz.answers = [];
+
+      setMode(state.mode);
+    };
+
+    // === FLASHCARDS ===
+    const renderFlashcards = () => {
+      const items = getItems();
+      if (!state.deck.length) {
+        state.deck = shuffle(items);
+        state.currentIndex = 0;
+      }
+      const current = state.deck[state.currentIndex];
+
+      $("#view").innerHTML = `
+        <label style="display:block;font-weight:700;margin-bottom:8px;font-size:14px">Select Category</label>
+        <select onchange="changeCategory(this.value)">
+          ${["All Categories", ...Object.keys(vocab)].map(cat =>
+            `<option value="${cat}" ${state.category === cat ? "selected" : ""}>${cat}</option>`
+          ).join("")}
+        </select>
+
+        <div class="flashcard-wrapper">
+          <div class="flashcard ${state.flipped ? "flipped" : ""}" onclick="flipCard()">
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-text">${current.es}</div>
+              ${current.note ? `<div class="tag">${current.note}</div>` : ""}
+              <div class="flashcard-hint">Click to see English</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-text">${current.en}</div>
+              <div class="flashcard-sub">${current.es}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-counter">Card ${state.currentIndex + 1} of ${state.deck.length}</div>
+
+        <div class="controls">
+          <button class="btn" onclick="prevCard()">← Previous</button>
+          <button class="btn" onclick="playFlashcard()">🔊 Listen</button>
+          <button class="btn" onclick="shuffleDeck()">🔀 Shuffle</button>
+          <button class="btn" onclick="nextCard()">Next →</button>
+        </div>
+      `;
+    };
+
+    window.flipCard = () => {
+      state.flipped = !state.flipped;
+      renderFlashcards();
+    };
+    window.nextCard = () => {
+      state.currentIndex = (state.currentIndex + 1) % state.deck.length;
+      state.flipped = false;
+      renderFlashcards();
+    };
+    window.prevCard = () => {
+      state.currentIndex = (state.currentIndex - 1 + state.deck.length) % state.deck.length;
+      state.flipped = false;
+      renderFlashcards();
+    };
+    window.shuffleDeck = () => {
+      state.deck = shuffle(getItems());
+      state.currentIndex = 0;
+      state.flipped = false;
+      renderFlashcards();
+    };
+    window.playFlashcard = () => {
+      const current = state.deck[state.currentIndex];
+      speak(current.es.replace("____", "")); // speak without blank
+    };
+
+    // === LISTENING ===
+    let listeningQ = null;
+
+    const renderListening = () => loadListeningQuestion();
+
+    const loadListeningQuestion = () => {
+      const items = getItems();
+      listeningQ = items[Math.floor(Math.random() * items.length)];
+
+      const wrong = shuffle(items.filter(x => x.es !== listeningQ.es)).slice(0, 3);
+      const options = shuffle([listeningQ.es, ...wrong.map(x => x.es)]);
+
+      $("#view").innerHTML = `
+        <label style="display:block;font-weight:700;margin-bottom:8px;font-size:14px">Select Category</label>
+        <select onchange="changeCategory(this.value)">
+          ${["All Categories", ...Object.keys(vocab)].map(cat =>
+            `<option value="${cat}" ${state.category === cat ? "selected" : ""}>${cat}</option>`
+          ).join("")}
+        </select>
+
+        <h3 style="text-align:center;margin:6px 0 18px;font-size:18px;font-weight:700">🔊 Listen and Choose</h3>
+
+        <button class="audio-btn" onclick="playAudio()">🔊</button>
+        <div style="text-align:center;color:var(--muted);font-size:14px;margin-bottom:18px">Click to hear the phrase</div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <div class="options" id="listening-options">
+          ${options.map(opt =>
+            `<div class="option" onclick="checkListening('${opt.replace(/'/g, "\\'")}')">${opt}</div>`
+          ).join("")}
+        </div>
+
+        <div class="controls">
+          <button class="btn" onclick="playAudio()">🔁 Play Again</button>
+          <button class="btn small" onclick="loadListeningQuestion()">⏭️ Skip</button>
+        </div>
+      `;
+
+      setTimeout(() => playAudio(), 300);
+    };
+
+    window.playAudio = () => speak(listeningQ.es.replace("____", ""));
+
+    window.loadListeningQuestion = () => loadListeningQuestion();
+
+    window.checkListening = (answer) => {
+      state.total++;
+      const isCorrect = answer === listeningQ.es;
+
+      if (isCorrect) {
+        state.correct++;
+        state.streak++;
+        $("#feedback").innerHTML = `✅ Correct! <span style="color:var(--muted);font-weight:500">(${listeningQ.en})</span>`;
+        $("#feedback").style.color = "var(--success)";
+      } else {
+        state.streak = 0;
+        $("#feedback").innerHTML = `❌ Wrong! Answer: <strong>${listeningQ.es}</strong> <span style="color:var(--muted);font-weight:500">(${listeningQ.en})</span>`;
+        $("#feedback").style.color = "var(--error)";
+      }
+
+      updateStats();
+
+      $$("#listening-options .option").forEach(el => {
+        el.style.pointerEvents = "none";
+        if (el.textContent === listeningQ.es) el.classList.add("correct");
+        if (el.textContent === answer && !isCorrect) el.classList.add("wrong");
+      });
+
+      setTimeout(() => loadListeningQuestion(), 2200);
+    };
+
+    // === QUIZ (Spanish -> English) ===
+    const renderQuiz = () => {
+      if (!quiz.active) return renderQuizMenu();
+      if (quiz.idx >= quiz.deck.length) return renderQuizResults();
+      return renderQuizQuestion();
+    };
+
+    const renderQuizMenu = () => {
+      const items = getItems();
+      const half = Math.ceil(items.length / 2);
+
+      $("#view").innerHTML = `
+        <label style="display:block;font-weight:700;margin-bottom:8px;font-size:14px">Select Category</label>
+        <select onchange="changeCategory(this.value)">
+          ${["All Categories", ...Object.keys(vocab)].map(cat =>
+            `<option value="${cat}" ${state.category === cat ? "selected" : ""}>${cat}</option>`
+          ).join("")}
+        </select>
+
+        <h3 style="text-align:center;margin-bottom:12px;font-size:18px;font-weight:700">📝 Quiz Mode</h3>
+        <p style="text-align:center;color:var(--muted);margin-bottom:22px">Choose a quiz length (Spanish → English).</p>
+
+        <div class="how-to-box">
+          <strong>How to play:</strong>
+          <ul class="how-to-steps">
+            <li>1️⃣ Read the Spanish phrase.</li>
+            <li>2️⃣ Tap the correct English meaning.</li>
+            <li>3️⃣ Try to beat your streak 🔥</li>
+          </ul>
+        </div>
+
+        <div style="max-width:420px;margin:0 auto;display:flex;flex-direction:column;gap:14px">
+          <button class="btn primary" onclick="startQuiz('half')" style="padding:18px;font-size:16px">
+            📊 Half Quiz<br>
+            <span style="font-size:13px;font-weight:normal;opacity:0.9">${half} questions</span>
+          </button>
+          <button class="btn primary" onclick="startQuiz('full')" style="padding:18px;font-size:16px">
+            🎯 Full Quiz<br>
+            <span style="font-size:13px;font-weight:normal;opacity:0.9">${items.length} questions</span>
+          </button>
+        </div>
+      `;
+    };
+
+    window.startQuiz = (mode) => {
+      const items = getItems();
+      const deck = shuffle(items);
+      quiz.deck = (mode === "half") ? deck.slice(0, Math.ceil(items.length / 2)) : deck;
+      quiz.idx = 0;
+      quiz.correct = 0;
+      quiz.answers = [];
+      quiz.active = true;
+      renderQuizQuestion();
+    };
+
+    const renderQuizQuestion = () => {
+      const item = quiz.deck[quiz.idx];
+      const allEn = [...new Set(getItems().map(x => x.en))]; // keep options relevant to category
+      const wrong = shuffle(allEn.filter(x => x !== item.en)).slice(0, 3);
+      const options = shuffle([item.en, ...wrong]);
+
+      const progress = Math.round((quiz.idx / quiz.deck.length) * 100);
+
+      $("#view").innerHTML = `
+        <div style="margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px">
+            <span style="color:var(--muted)">Question ${quiz.idx + 1} of ${quiz.deck.length}</span>
+            <span style="font-weight:700;color:var(--primary)">${progress}% Complete</span>
+          </div>
+          <div style="background:var(--bg);height:8px;border-radius:4px;overflow:hidden">
+            <div style="background:var(--primary);height:100%;width:${progress}%;transition:width 0.3s"></div>
+          </div>
+        </div>
+
+        <div class="prompt">${item.es}</div>
+        ${item.note ? `<div style="text-align:center;margin:-8px 0 10px"><span class="tag">${item.note}</span></div>` : ""}
+
+        <div class="controls" style="margin-top:0;margin-bottom:10px">
+          <button class="btn small" onclick="speakQuiz()">🔊 Listen</button>
+        </div>
+
+        <div class="feedback" id="quiz-feedback"></div>
+
+        <div class="options" id="quiz-options">
+          ${options.map(opt =>
+            `<div class="option" onclick="answerQuiz('${opt.replace(/'/g, "\\'")}')">${opt}</div>`
+          ).join("")}
+        </div>
+      `;
+    };
+
+    window.speakQuiz = () => {
+      const item = quiz.deck[quiz.idx];
+      speak(item.es.replace("____", ""));
+    };
+
+    window.answerQuiz = (answer) => {
+      const item = quiz.deck[quiz.idx];
+      const isCorrect = answer === item.en;
+
+      state.total++;
+
+      if (isCorrect) {
+        quiz.correct++;
+        state.correct++;
+        state.streak++;
+        $("#quiz-feedback").textContent = "✅ Correct!";
+        $("#quiz-feedback").style.color = "var(--success)";
+      } else {
+        state.streak = 0;
+        $("#quiz-feedback").innerHTML = `❌ Wrong! Answer: <strong>${item.en}</strong>`;
+        $("#quiz-feedback").style.color = "var(--error)";
+      }
+
+      updateStats();
+
+      $$("#quiz-options .option").forEach(el => {
+        el.style.pointerEvents = "none";
+        if (el.textContent === item.en) el.classList.add("correct");
+        if (el.textContent === answer && !isCorrect) el.classList.add("wrong");
+      });
+
+      quiz.answers.push({ es: item.es, correct: item.en, user: answer, ok: isCorrect });
+
+      setTimeout(() => {
+        quiz.idx++;
+        renderQuiz();
+      }, 1400);
+    };
+
+    const renderQuizResults = () => {
+      const pct = quiz.deck.length ? ((quiz.correct / quiz.deck.length) * 100).toFixed(1) : "0.0";
+      const grade = pct >= 90 ? "🏆 Excellent!" :
+                    pct >= 75 ? "🌟 Great Job!" :
+                    pct >= 60 ? "👍 Good!" :
+                    "💪 Keep Practicing!";
+
+      const wrong = quiz.answers.filter(a => !a.ok);
+
+      $("#view").innerHTML = `
+        <h3 style="text-align:center;font-size:24px;font-weight:700;margin-bottom:10px">Quiz Complete!</h3>
+
+        <div style="text-align:center;margin-bottom:22px">
+          <div style="font-size:48px;font-weight:800;color:var(--primary);margin-bottom:8px">${pct}%</div>
+          <div style="font-size:20px;margin-bottom:10px">${grade}</div>
+          <div style="font-size:16px;color:var(--muted)">${quiz.correct} out of ${quiz.deck.length} correct</div>
+        </div>
+
+        ${wrong.length ? `
+          <details style="background:white;padding:16px;border-radius:8px;border:1px solid var(--border);margin-bottom:20px">
+            <summary style="cursor:pointer;font-weight:700;color:var(--text)">Review Mistakes (${wrong.length})</summary>
+            <div style="margin-top:16px">
+              ${wrong.map(a => `
+                <div style="padding:12px;background:var(--bg);border-radius:6px;margin-bottom:8px">
+                  <div style="font-weight:700;margin-bottom:4px">${a.es}</div>
+                  <div style="font-size:14px;color:var(--error)">Your answer: ${a.user}</div>
+                  <div style="font-size:14px;color:var(--success)">Correct: ${a.correct}</div>
+                </div>
+              `).join("")}
+            </div>
+          </details>
+        ` : ""}
+
+        <div class="controls">
+          <button class="btn primary" onclick="retakeQuiz()">🔄 Retake</button>
+          <button class="btn" onclick="backToQuizMenu()">← Back to Menu</button>
+        </div>
+      `;
+    };
+
+    window.retakeQuiz = () => {
+      const len = quiz.deck.length;
+      // if user took "half", keep half-ish; else full
+      const items = getItems();
+      const mode = (len <= Math.ceil(items.length / 2)) ? "half" : "full";
+      startQuiz(mode);
+    };
+
+    window.backToQuizMenu = () => {
+      quiz.active = false;
+      quiz.deck = [];
+      quiz.idx = 0;
+      quiz.correct = 0;
+      quiz.answers = [];
+      renderQuizMenu();
+    };
+
+    // === DATABASE ===
+    const renderDatabase = () => {
+      let html = `<h3 style="font-size:18px;font-weight:700;margin-bottom:16px">Vocabulary Database</h3>`;
+      html += `<div class="table-container"><table>
+        <thead><tr><th>Spanish</th><th>English</th><th>Notes</th></tr></thead><tbody>`;
+
+      Object.keys(vocab).forEach(cat => {
+        html += `<tr><td colspan="3" class="category-header">${cat}</td></tr>`;
+        vocab[cat].forEach(item => {
+          html += `<tr>
+            <td><strong>${item.es}</strong></td>
+            <td>${item.en}</td>
+            <td>${item.note ? item.note : ""}</td>
+          </tr>`;
+        });
+      });
+
+      html += `</tbody></table></div>`;
+      $("#view").innerHTML = html;
+    };
+
+    // Init
+    renderTabs();
+    setMode("flashcards");
+    updateStats();
+  </script>
+</body>
+</html>
